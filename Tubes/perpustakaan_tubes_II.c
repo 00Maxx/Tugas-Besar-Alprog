@@ -106,6 +106,7 @@ void login(void) {
 }
 void menu(void) {
   int pilihan;
+  int validasi();
   //memanggil fungsi yang akan digunakan
   void tambah_buku();
   void delete_buku(void);
@@ -115,6 +116,7 @@ void menu(void) {
   void lihatp_buku(void);
   void pengembalian(void);
   void help();
+  
   
   do {
     system("cls");
@@ -155,7 +157,7 @@ void menu(void) {
       printf("%c", j_pilihan[b]);
 
     }
-    scanf("%i", & pilihan);
+    pilihan = validasi (1);
     fflush(stdin);
 
     switch (pilihan) {
@@ -622,8 +624,40 @@ void help(){
 	menu();
 }
 
+int validasi (int x) {
+
+	double pilihan = 0;
+	int hasil;
+	int i = 0;
+
+
+	//perulangan validasi
+	do {
+		pilihan = scanf("%d", &hasil);
+
+		while(getchar() != '\n') {
+			//tidak ada proses
+		}
+
+		if (pilihan == 0) {
+			printf("Input Invalid!! Pilih Dengan Benar : ");
+		} else if (x==1) {
+			if (hasil > 9 || hasil <= 0) {
+				printf("Input Invalid!! Pilih Dengan Benar : ");
+			} else {
+				i = 1;
+			}
+		}else {
+			i = 1;
+		}
+
+	} while (i != 1);
+
+	return hasil;
+
+}
+
 int main(void) {
   login();
-  
   return 0;
 }
