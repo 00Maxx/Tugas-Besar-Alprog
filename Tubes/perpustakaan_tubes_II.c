@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <time.h>
+
 #define MAKS_JENIS_BUKU 50
 #define MAKS_JUDUL_BUKU 50
 #define MAKS_NAMA_PENULIS 50
@@ -26,12 +28,12 @@ program ini menyimpan semua daftar dalam file bin yang telah terbuat secara otom
 
 // Struktur untuk menyimpan informasi mengenai sebuah buku
 typedef struct Buku { //typedef pada struct adalah sebuah cara untuk memberikan sebuah alias atau nama lain untuk tipe data struktur di C
-  int kode_buku; // Kode buku (integer)
-  char jenis_buku[MAKS_JENIS_BUKU]; // Jenis buku (string)
-  char judul_buku[MAKS_JUDUL_BUKU]; // Judul buku (string)
-  char penulis[MAKS_NAMA_PENULIS]; // Nama penulis (string)
-  int halaman; // Jumlah halaman (integer)
-  float harga; // Harga buku (float)
+	int kode_buku; // Kode buku (integer)
+	char jenis_buku[MAKS_JENIS_BUKU]; // Jenis buku (string)
+	char judul_buku[MAKS_JUDUL_BUKU]; // Judul buku (string)
+	char penulis[MAKS_NAMA_PENULIS]; // Nama penulis (string)
+	int halaman; // Jumlah halaman (integer)
+	float harga; // Harga buku (float)
 } Buku;
 
 /*typedef struct Bukup{
@@ -43,14 +45,27 @@ typedef struct Buku { //typedef pada struct adalah sebuah cara untuk memberikan 
 }
 Bukup;*/
 
+//struct tm {
+  // int tm_sec;         /* seconds,  range 0 to 59          */
+//   int tm_min;         /* minutes, range 0 to 59           */
+  // int tm_hour;        /* hours, range 0 to 23             */
+   //int tm_mday;        /* day of the month, range 1 to 31  */
+   //int tm_mon;         /* month, range 0 to 11             */
+   //int tm_year;        /* The number of years since 1900   */
+   //int tm_wday;        /* day of the week, range 0 to 6    */
+   //int tm_yday;        /* day in the year, range 0 to 365  */
+   //int tm_isdst;       /* daylight saving time             */
+//};
+
 typedef struct Peminjaman{
-  char nama_peminjam[MAKS_NAMA_PEMINJAM];
-  int nim;
-  unsigned int kodep_buku;
-  char judulp_buku[MAKS_JUDUL_BUKU];
-  char batas[MAKS_PEMINJAMAN];
-  char tanggal_pengembalian[MAKS_PEMINJAMAN];
+	char nama_peminjam[MAKS_NAMA_PEMINJAM];
+	int nim;
+	unsigned int kodep_buku;
+	char judulp_buku[MAKS_JUDUL_BUKU];
+	char batas[MAKS_PEMINJAMAN];
+/*	char tanggal_pengembalian[MAKS_PEMINJAMAN];*/
 } Peminjaman;
+
 
 
 void login(void) {
@@ -371,6 +386,7 @@ void peminjaman(void){
   Buku tambahBuku = {
 	0
   }; //Memanggil struct buku
+
   FILE * filePointer; //filepointer
   FILE * fPBuku;
   filePointer = fopen("Bukup.bin", "ab+");
@@ -397,9 +413,18 @@ void peminjaman(void){
       printf("\t\t\tJudul buku  :");
       fflush(stdin);
       fgets(peminjaman.judulp_buku, MAKS_JUDUL_BUKU, stdin);
-      printf("\t\t\tBatas peminjaman (Tanggal/Bulan/Tahun) :");
-      fflush(stdin);
-      fgets(peminjaman.batas, MAKS_PEMINJAMAN, stdin);
+     // printf("\t\t\tBatas peminjaman (Tanggal/Bulan/Tahun) : %02d/%02d/%04d \n", localTime->tm_mday, localTime->tm_mon + 1, localTime->tm_year + 1900);
+      	time_t currentTime;
+	    struct tm *localTime;
+	
+	    time(&currentTime); // Mendapatkan waktu saat ini dalam hitungan detik //direvisi 28 Desember 2022/ By Max dan Firman
+	    localTime = localtime(&currentTime); // Mengkonversi waktu saat ini menjadi struktur tm
+	        
+	    // Menambahkan jumlah hari selama seminggu ke waktu saat ini
+	    localTime->tm_mday += 7; //direvisi 28 Desember 2022/ By Firman dan Max
+	    mktime(localTime);
+	    printf("\t\t\tBatas waktu peminjaman adalah: %02d/%02d/%04d \n", localTime->tm_mday, localTime->tm_mon + 1, localTime->tm_year + 1900);
+	    fgets(peminjaman.batas, MAKS_PEMINJAMAN, stdin);
 
       //Write ke file
       fwrite( & peminjaman, sizeof(peminjaman), 1, filePointer);
@@ -594,10 +619,10 @@ void pengembalian(void){
     printf("\n\t\t\tBuku tidak ditemukan");
     getchar();
   }
-  fclose(filePointer);
-  fclose(tempfP);
-  remove("Bukup.bin");
-  rename("temp.bin", "Bukup.bin");
+	  fclose(filePointer);
+	  fclose(tempfP);
+	  remove("Bukup.bin");
+	  rename("temp.bin", "Bukup.bin");
   printf("\n\t\t\tTekan tombol enter untuk kembali ke menu utama");
   fflush(stdin);
   getchar();
@@ -623,6 +648,8 @@ void help(){
 	system("cls");
 	menu();
 }
+
+
 
 int validasi (int x) {
 
@@ -656,6 +683,7 @@ int validasi (int x) {
 	return hasil;
 
 }
+
 
 int main(void) {
   login();
